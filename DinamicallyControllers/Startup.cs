@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DinamicallyControllers.Controllers.ControllerModelConventions;
+using DinamicallyControllers.Controllers.FeatureProviders;
+using DinamicallyControllers.Models;
+using DinamicallyControllers.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -23,7 +27,13 @@ namespace DinamicallyControllers
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddSingleton(typeof(Repository<>));
+
+            services.AddMvc(opt =>
+                opt.Conventions.Add(new GenericControllerRouteConvention())
+            ).ConfigureApplicationPartManager(apm =>
+                apm.FeatureProviders.Add(new GenericTypeControllerFeatureProvider())
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
